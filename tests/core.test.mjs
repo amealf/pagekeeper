@@ -5,6 +5,7 @@ const profile=JSON.parse(await readFile(new URL('../extension/adapters.json',imp
 test('rounded months retain uncertainty and use calendar months',()=>{
   const d=Core.dateRange('3mo • Edited',now);assert.equal(d.upper,Date.parse('2026-07-10T12:00:00Z'));assert.equal(d.lower,Date.parse('2026-06-10T12:00:00Z'));
   assert.equal(Core.dateRange('3个月前',now).upper,d.upper);
+  assert.equal(Core.dateRange('19 小时前 • 已编辑',now).upper,now-19*3600000);
   assert.equal(Core.dateRange('1mo',Date.parse('2026-03-31T12:00:00Z')).upper,Date.parse('2026-02-28T12:00:00Z'));
 });
 test('only known timestamps and unambiguous calendar dates parse',()=>{

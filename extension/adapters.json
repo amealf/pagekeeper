@@ -7,11 +7,11 @@
     "newestFirst": false, "boundaryItems": 3, "intervalMs": 2500, "maxSteps": 250
   },
   {
-    "id": "linkedin-activity", "name": "LinkedIn 动态 · 待页面校准", "mode": "page",
-    "itemSelector": ".feed-shared-update-v2[data-urn]",
-    "dateSelector": ".update-components-actor__sub-description",
+    "id": "linkedin-activity", "name": "LinkedIn 动态", "mode": "page",
+    "itemSelector": "[role='list'][data-testid^='ProfileRecentActivity'] [role='listitem'][componentkey^='update-card-focus']",
+    "dateSelector": "p[componentkey]:has(> span):not(:has(a))",
     "dateAttribute": "", "linkSelector": "a[href*='/feed/update/'], a[href*='/posts/']",
-    "idAttribute": "data-urn", "scrollSelector": "", "endSelector": "",
+    "idAttribute": "componentkey", "scrollSelector": "", "endSelector": "",
     "busySelector": "main [role='progressbar']", "nextSelector": "", "pinnedSelector": "",
     "newestFirst": false, "boundaryItems": 3, "intervalMs": 3000, "maxSteps": 250
   },
