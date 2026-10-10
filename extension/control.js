@@ -256,7 +256,7 @@ chrome.runtime.onMessage.addListener(m=>{
   if (m.type==='PT_BOUND' && !working && !saving) {binding=m.binding;showBinding();}
   if (m.type==='PT_SAVED' && (!run || !run.download_id || run.download_id===m.id)) {
     const url=pendingObjectUrls.get(m.id);if(url){URL.revokeObjectURL(url);pendingObjectUrls.delete(m.id);}
-    const suffix={closed_after_save:'来源页已关闭。',kept_navigation_changed:'来源页已切换到其他页面，已保留。',source_already_closed:'来源页已经关闭。',kept_by_choice:'按本次设置保留来源页。',close_failed:'保存已完成，关闭页面未成功；请手动关闭来源页。'}[m.closeStatus] || '';
+    const suffix={closed_after_save:'来源页已关闭。',kept_navigation_changed:'来源页已切换到其他页面，已保留。',source_already_closed:'来源页已经关闭。',kept_by_choice:'按本次设置保留来源页。',kept_browser_restarted:'浏览器曾重启，已保留当前页面。',close_failed:'保存已完成，关闭页面未成功；请手动关闭来源页。'}[m.closeStatus] || '';
     $('saved').textContent=`文件已保存：${m.path} ${suffix}`;
   }
 });

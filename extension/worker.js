@@ -1,5 +1,9 @@
 importScripts('core.js');
-const state = () => chrome.storage.session.get(['controlId','binding','running']);
+const state = async () => {
+  const s=await chrome.storage.session.get(['controlId','binding','running','sessionNonce']);
+  if(!s.sessionNonce){s.sessionNonce=crypto.randomUUID();await chrome.storage.session.set({sessionNonce:s.sessionNonce});}
+  return s;
+};
 const controlUrl = chrome.runtime.getURL('control.html');
 const httpUrl = value => {
   const u = new URL(value);
@@ -32,13 +36,21 @@ chrome.action.onClicked.addListener(async tab => {
     await chrome.runtime.sendMessage({type:'PT_BOUND',binding}).catch(()=>{});
   } catch(e) { console.error('Page Turner:',e.message); }
 });
+const finishing=new Set();
 async function finishDownload(id) {
+  if(finishing.has(id))return;
+  finishing.add(id);
+  try {await finishDownloadOnce(id);} finally {finishing.delete(id);}
+}
+async function finishDownloadOnce(id) {
   const key = `download:${id}`, data = await chrome.storage.local.get(key), job = data[key];
   if (!job || job.done) return;
   const [download] = await chrome.downloads.search({id});
   if (download?.state !== 'complete') return;
   let closeStatus = 'kept_by_choice';
-  if (job.closeAfterSave) {
+  const session=await chrome.storage.session.get('sessionNonce');
+  if (job.closeAfterSave && session.sessionNonce!==job.sessionNonce) closeStatus='kept_browser_restarted';
+  else if (job.closeAfterSave) {
     try {
       const tab = await chrome.tabs.get(job.tabId);
       if (PageTurnerCore.closeAllowed(tab,job.url,true)) {
@@ -97,7 +109,7 @@ chrome.runtime.onMessage.addListener((m,sender,reply) => {
       if (!m.blobUrl?.startsWith(`blob:chrome-extension://${chrome.runtime.id}/`)) throw new Error('保存文件来源无效');
       if (!/^pagekeeper\/[a-z0-9._-]+\.(html|txt|json)$/i.test(m.filename)) throw new Error('保存路径无效');
       const id = await chrome.downloads.download({url:m.blobUrl,filename:m.filename,saveAs:false,conflictAction:'uniquify'});
-      await chrome.storage.local.set({[`download:${id}`]:{tabId:m.tabId,url:m.url,closeAfterSave:!!m.closeAfterSave,done:false,created_at:new Date().toISOString()}});
+      await chrome.storage.local.set({[`download:${id}`]:{tabId:m.tabId,url:m.url,sessionNonce:s.sessionNonce,closeAfterSave:!!m.closeAfterSave,done:false,created_at:new Date().toISOString()}});
       await finishDownload(id); // Also catches a tiny download finishing before its job was stored.
       return {id};
     }

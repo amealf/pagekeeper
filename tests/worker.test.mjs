@@ -6,7 +6,7 @@ function fixture({url='https://example.test/list',downloadState='in_progress',se
   const store=data=>({async get(keys){return typeof keys==='string'?{[keys]:data[keys]}:Object.fromEntries(keys.map(k=>[k,data[k]]));},async set(values){Object.assign(data,values);}});
   const downloads=new Map();
   const chrome={runtime:{id:'test',getURL:x=>`chrome-extension://test/${x}`,onMessage:{addListener:fn=>listener=fn},async sendMessage(m){messages.push(m);}},action:{onClicked:{addListener(){}}},storage:{session:store(session),local:store(local)},scripting:{async executeScript(){}},permissions:{async contains(){return true;}},tabs:{async get(id){if(!tabs.has(id))throw Error('No tab with id');return tabs.get(id);},async remove(id){closed.push(id);tabs.delete(id);}},downloads:{async download(){downloads.set(10,{id:10,state:downloadState,filename:'/downloads/pagekeeper/example.html'});return 10;},async search({id}){return downloads.has(id)?[downloads.get(id)]:[];},onChanged:{addListener:fn=>changed=fn}}};
-  const context=vm.createContext({chrome,console,URL,importScripts(){vm.runInContext(core,context);}});vm.runInContext(code,context);
+  const context=vm.createContext({chrome,console,URL,crypto:{randomUUID:()=> 'fixture-browser-session'},importScripts(){vm.runInContext(core,context);}});vm.runInContext(code,context);
   async function send(m,sender={id:'test',url:'chrome-extension://test/control.html',tab:{id:1}}){return new Promise(resolve=>{const result=listener(m,sender,resolve);if(result!==true)resolve(null);});}
   async function complete(){downloads.get(10).state='complete';changed({id:10,state:{current:'complete'}});await new Promise(r=>setTimeout(r,25));}
   return {send,complete,closed,local,session,tabs,downloads,messages};
@@ -27,4 +27,7 @@ test('untrusted messages, blobs, filenames and mismatched bindings are rejected'
 });
 test('recovered archive can export without adopting or closing a new bound source',async()=>{
   const f=fixture();const result=await f.send({...save,tabId:99,closeAfterSave:false});assert.equal(result.ok,true);await f.complete();assert.deepEqual(f.closed,[]);
+});
+test('a completed old download after a browser restart does not close new tabs',async()=>{
+  const f=fixture();await f.send(save);f.session.sessionNonce='different-browser-session';await f.complete();assert.deepEqual(f.closed,[]);assert.equal(f.local['download:10'].closeStatus,'kept_browser_restarted');
 });
