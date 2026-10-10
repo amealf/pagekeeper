@@ -47,6 +47,9 @@ function controls() {
   $('state-dot').className=`state-dot ${working ? 'running' : run?.status==='saved' ? 'saved' : ''}`;
 }
 function showError(e) { $('message').textContent=e.message || String(e); }
+function parseConfig(text) {
+  try {return JSON.parse(text);} catch {throw new Error('网站配置的 JSON 格式不正确，请检查引号、逗号和括号。');}
+}
 function showBinding() {
   $('binding').textContent=binding ? '已绑定来源页。完成保存后仅关闭这个页面。' : '也可以在来源页点击插件图标，绑定当前页面。';
   if (binding) $('source').value=binding.url;
@@ -103,7 +106,7 @@ async function start() {
   starting=true;controls();
   $('message').textContent='';$('saved').textContent='';
   try {
-    const adapter=Core.validateAdapter({...JSON.parse($('config').value),mode:$('mode').value,newestFirst:$('ordered').checked});
+    const adapter=Core.validateAdapter({...parseConfig($('config').value),mode:$('mode').value,newestFirst:$('ordered').checked});
     const cutoff=$('cutoff').value;
     if (cutoff && adapter.newestFirst && (!adapter.itemSelector || !adapter.dateSelector)) throw new Error('日期停止需要填写内容块与日期选择器');
     const prepared=await command({type:'PT_PREPARE'});binding=prepared.binding;showBinding();
@@ -204,7 +207,7 @@ document.querySelectorAll('[data-months]').forEach(button=>button.addEventListen
 $('clear-date').addEventListener('click',()=>{$('cutoff').value='';});
 $('export-adapter').addEventListener('click',()=>{
   try {
-    const a=Core.validateAdapter(JSON.parse($('config').value));
+    const a=Core.validateAdapter(parseConfig($('config').value));
     const url=URL.createObjectURL(new Blob([JSON.stringify(a,null,2)],{type:'application/json'}));
     const link=document.createElement('a');link.href=url;link.download=`pagekeeper-${a.id.replace(/[^a-z0-9_-]/gi,'_')}.json`;link.click();
     setTimeout(()=>URL.revokeObjectURL(url),10000);
@@ -214,14 +217,14 @@ $('import-adapter').addEventListener('change',async event=>{
   try {
     const file=event.target.files[0];if(!file)return;
     if(file.size>65536) throw new Error('网站配置文件太大');
-    const a=Core.validateAdapter(JSON.parse(await file.text()));
+    const a=Core.validateAdapter(parseConfig(await file.text()));
     adapters=adapters.filter(x=>x.id!==a.id).concat(a);await chrome.storage.local.set({adapters});populateAdapters(a.id);
     $('message').textContent='网站配置已导入。';
   } catch(e) {showError(e);} finally {event.target.value='';}
 });
 $('save-adapter').addEventListener('click',async()=>{
   try {
-    const a=Core.validateAdapter(JSON.parse($('config').value));
+    const a=Core.validateAdapter(parseConfig($('config').value));
     adapters=adapters.filter(x=>x.id!==a.id).concat(a);
     await chrome.storage.local.set({adapters});populateAdapters(a.id);$('message').textContent='配置已保存。';
   } catch(e) {showError(e);}

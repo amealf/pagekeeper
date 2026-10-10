@@ -4,6 +4,10 @@ A configurable Chrome extension that turns pages, saves loaded content locally, 
 
 **Status:** 0.1.0 preview. Not submitted to the Chrome Web Store. LinkedIn selectors are an uncalibrated starter profile, not a guarantee of complete history coverage. The initial UI is Chinese.
 
+![Pagekeeper desktop control UI, labelled simulated preview](docs/screenshots/desktop-preview.png)
+
+Screenshot of the real UI using a clearly labelled test fixture. [Narrow layout preview](docs/screenshots/mobile-preview.png).
+
 ## Features
 
 - Scroll a screen at a time, scroll to the current bottom, or click a configured next-page button.
