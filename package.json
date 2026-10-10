@@ -1,0 +1,10 @@
+{
+  "name":"pagekeeper",
+  "version":"0.1.0",
+  "private":true,
+  "type":"module",
+  "description":"A configurable Chrome extension for page turning and local archives.",
+  "license":"MIT",
+  "scripts":{"test":"node --test --test-concurrency=1 tests/*.test.mjs","check":"node scripts/check.mjs","package":"node scripts/package.mjs","preview":"node scripts/preview.mjs"},
+  "engines":{"node":">=22"}
+}

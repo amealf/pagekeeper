@@ -1,0 +1,19 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>使用指南 · Pagekeeper</title><link rel="stylesheet" href="control.css"><link rel="icon" href="icons/icon-32.png"></head><body><nav class="topbar"><a class="brand" href="control.html"><img src="icons/icon-48.png" width="32" height="32" alt="">Pagekeeper</a><a href="control.html">回到控制页 →</a></nav><main class="document"><h1>使用指南</h1><p>Pagekeeper 将已经显示在浏览器中的网页内容保存在本机。</p><section><h2>开始一个任务</h2><ol><li>在来源页面点击插件图标，绑定当前页面。也可以从控制页输入网址并打开；Chrome 会请求这个网站的访问权限。</li><li>选择网站配置和翻页方式。逐屏滚动适合长列表；End 会跳到当前页面底部；下一页模式需要配置按钮。</li><li>需要日期范围时，填写回溯截止日期。确认列表按时间倒序后，再开启「按日期自动停止」。</li><li>开始翻页。随时点击「停止并保存」。Chrome 确认文件下载完成后，插件才关闭已绑定的来源页面。</li></ol><p>文件默认放在下载目录的 pagekeeper 文件夹。保存失败或中断时保持来源页面打开。控制页中断后，可恢复最近记录并重新导出。</p></section><section id="websites"><h2>添加网站配置</h2><p>打开「自定义网站配置」，修改 JSON，再保存成新配置。可导入或导出配置文件，与其他使用者共享。</p><pre>{
+  "id": "example-news",
+  "name": "Example · 新闻列表",
+  "mode": "page",
+  "itemSelector": "article",
+  "dateSelector": "time",
+  "dateAttribute": "datetime",
+  "linkSelector": "a[rel='bookmark']",
+  "idAttribute": "data-id",
+  "scrollSelector": "",
+  "endSelector": ".end-of-list",
+  "busySelector": "[aria-busy='true']",
+  "nextSelector": "",
+  "pinnedSelector": ".pinned",
+  "newestFirst": false,
+  "boundaryItems": 3,
+  "intervalMs": 2500,
+  "maxSteps": 250
+}</pre><p>itemSelector 指定每一条内容；dateSelector 只选择该条的发布日期，避免读到正文中的截止日期或转发内嵌原帖日期。idAttribute 或 linkSelector 应指向唯一的公告身份；scrollSelector 留空表示整页滚动。选择器使用 CSS 语法。</p><p>默认通用模式按每次加载的主内容保存快照。设置内容块后可以逐条保存，更适合会移除旧内容的列表。文本修改会保留上一版文本；只做简单本地去重，不替代岗位台账。</p></section><section><h2>日期与覆盖范围</h2><p>支持带时区的 ISO 日期时间、YYYY-MM-DD、中文年月日、英文「10 October 2026」，以及「2w」「3mo」「3个月前」等相对日期。相对日期保留范围，不编造精确日期。</p><p>日历日期以 UTC 日界线比较；相对月份按日历月计算。达到日期边界需要末尾连续多条明确早于截止日期。日期未知、转发顺序不明确时，仍可能有缺口；查看保存文件中的 coverage 和原始日期。</p><p>只有配置的可见结束标记才确认页面结束。没有新内容、达到翻页次数／30 分钟上限、读取中断或用户停止，均保存为部分覆盖。LinkedIn 配置是未完成真实页面校准的起点；默认不假设动态按时间排序。</p></section><section><h2>支持范围</h2><p>适用于可访问的 HTTP／HTTPS 网页。各网站的结构、日期格式和结束标记需要实际校准；Chrome 内部页面、画布内容、跨来源 iframe 和闭合 Shadow DOM 不在本版本支持范围内。</p><p>Page Down 和 End 通过网页滚动 API 实现相同的翻页效果。滚动和本地保存不会改变网站对自动操作的条款；使用时需遵守网站规则和自身访问权限。</p><p>保存 HTML 是去掉脚本、表单和外部资源的静态存档，包含原始文本、链接及结构化记录；图片与原站外观不保证完整。不会展开「查看更多」或自动点击登录、权限、挑战及其他非翻页按钮。</p></section></main></body></html>

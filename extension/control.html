@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pagekeeper · 网页翻页与存档</title><link rel="icon" href="icons/icon-32.png"><link rel="stylesheet" href="control.css">
+  <script src="core.js" defer></script><script src="control.js" defer></script>
+</head>
+<body>
+<nav class="topbar" aria-label="主导航"><a class="brand" href="control.html"><img src="icons/icon-48.png" alt="" width="32" height="32">Pagekeeper<span>网页存档</span></a><div class="top-links"><a href="guide.html">使用指南</a><a href="privacy.html">隐私</a><span class="version">v0.1.0</span></div></nav>
+<main>
+  <header class="page-heading"><div><h1>把浏览过的内容，留在本地。</h1><p>滚动或翻页，按日期停下，再保存为可阅读的文件。</p></div><span class="local-tag"><span></span>仅保存在本机</span></header>
+  <div class="workspace"><div class="settings">
+  <section class="source-section" aria-label="来源页面"><div class="section-heading"><h2>来源页面</h2><span class="step-label">先选择要浏览的页面</span></div>
+    <label for="source">来源网址</label>
+    <div class="source-row"><input id="source" type="url" placeholder="粘贴网页链接 https://…" autocomplete="off"><button id="open" class="secondary">打开页面</button></div>
+    <p id="binding" class="hint">也可以在来源页点击插件图标，绑定当前页面。</p>
+  </section>
+  <section aria-label="翻页设置"><div class="section-heading"><h2>翻页设置</h2><span class="step-label">网站格式可以重复使用</span></div>
+    <div class="grid">
+      <div><label for="adapter">网站配置</label><select id="adapter"></select></div>
+      <div><label for="cutoff">回溯截止日期 <span class="optional">可选</span></label><input id="cutoff" type="date"><div class="quick-dates"><button type="button" data-months="1">近 1 个月</button><button type="button" data-months="3">近 3 个月</button><button type="button" id="clear-date">不限日期</button></div></div>
+      <div><label for="mode">翻页方式</label><select id="mode"><option value="page">逐屏向下（Page Down）</option><option value="end">滚到当前底部（End）</option><option value="next">点击下一页</option></select></div>
+      <div><label for="format">保存格式</label><select id="format"><option value="html">HTML · 包含文本与记录</option><option value="txt">TXT · 文本与链接</option><option value="json">JSON · 结构化记录</option></select></div>
+    </div>
+    <div class="setting-row"><label class="check"><input id="ordered" type="checkbox"><span>按日期自动停止<small>仅在确认列表按时间倒序时启用；日期不明确会保留覆盖缺口。</small></span></label></div>
+    <div class="setting-row"><label class="check"><input id="close" type="checkbox" checked><span>保存后关闭来源页<small>等 Chrome 确认文件保存完成，再关闭本次页面。</small></span></label></div>
+    <details><summary>自定义网站配置 <span>内容块 · 日期 · 下一页</span></summary>
+      <p class="hint">修改内容块、日期、滚动区域或下一页按钮的选择器，然后保存为一个网站配置。</p>
+      <label for="config">网站配置 JSON</label><textarea id="config" rows="15" spellcheck="false"></textarea>
+      <div class="actions"><button id="save-adapter" class="secondary">保存网站配置</button><button id="export-adapter" class="text-button">导出配置</button><label class="file-button">导入配置<input id="import-adapter" type="file" accept=".json,application/json"></label></div>
+    </details>
+  </section>
+  </div><aside class="session-panel">
+  <section class="progress" aria-label="当前进度">
+    <div class="session-label"><span id="state-dot" class="state-dot"></span>本次任务</div>
+    <h2 id="status" role="status" aria-live="polite">准备开始</h2><p id="progress">选择来源和网站配置，然后开始翻页。</p><p id="message" role="alert"></p>
+    <div class="actions primary-actions"><button id="start">开始翻页 <span aria-hidden="true">↓</span></button><button id="stop" class="secondary" disabled>停止并保存</button><button id="export" class="text-button" disabled>重新保存文件</button></div>
+    <p id="saved" class="hint"></p>
+  </section>
+  <div class="recovery"><h2>上次的记录</h2><p>中途关闭了控制页？已记录的内容可以找回来。</p><button id="recover" class="text-button">恢复最近记录 <span aria-hidden="true">↗</span></button></div>
+  <p class="session-note">停止加载会记为「部分覆盖」。网页日期和顺序不明确时，保存实际进度供后续检查。</p>
+  </aside></div>
+  <footer><span>你的页面，你的存档。</span><a href="guide.html#websites">如何添加其他网站 →</a></footer>
+</main></body></html>

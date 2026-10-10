@@ -1,0 +1,25 @@
+[
+  {
+    "id": "generic-scroll", "name": "通用网页 · 逐屏滚动", "mode": "page",
+    "itemSelector": "", "dateSelector": "", "dateAttribute": "datetime",
+    "linkSelector": "a[href]", "idAttribute": "", "scrollSelector": "",
+    "endSelector": "", "busySelector": "", "nextSelector": "", "pinnedSelector": "",
+    "newestFirst": false, "boundaryItems": 3, "intervalMs": 2500, "maxSteps": 250
+  },
+  {
+    "id": "linkedin-activity", "name": "LinkedIn 动态 · 待页面校准", "mode": "page",
+    "itemSelector": ".feed-shared-update-v2[data-urn]",
+    "dateSelector": ".update-components-actor__sub-description",
+    "dateAttribute": "", "linkSelector": "a[href*='/feed/update/'], a[href*='/posts/']",
+    "idAttribute": "data-urn", "scrollSelector": "", "endSelector": "",
+    "busySelector": "main [role='progressbar']", "nextSelector": "", "pinnedSelector": "",
+    "newestFirst": false, "boundaryItems": 3, "intervalMs": 3000, "maxSteps": 250
+  },
+  {
+    "id": "generic-next", "name": "分页列表 · 填写下一页按钮", "mode": "next",
+    "itemSelector": "article", "dateSelector": "time", "dateAttribute": "datetime",
+    "linkSelector": "a[href]", "idAttribute": "", "scrollSelector": "",
+    "endSelector": "", "busySelector": "", "nextSelector": "a[rel='next']", "pinnedSelector": "",
+    "newestFirst": false, "boundaryItems": 3, "intervalMs": 2500, "maxSteps": 100
+  }
+]
