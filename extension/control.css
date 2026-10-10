@@ -5,3 +5,4 @@
 @media(max-width:460px){.grid{grid-template-columns:1fr}.source-row{flex-direction:column}.settings section{padding:21px 18px}.brand{font-size:17px}.top-links{gap:12px;font-size:12px}summary span{display:block;margin:6px 0 0}.source-row button{align-self:flex-start}footer{flex-direction:column;gap:8px}.page-heading p{font-size:13px}.file-button input{width:160px}h1{font-size:22px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 .preview-banner{padding:6px 20px;background:#fff3d8;color:#73500b;text-align:center;font-size:12px}
+#message[data-kind=info]{color:#17605c;background:#eaf5f3}

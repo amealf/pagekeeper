@@ -46,7 +46,10 @@ function controls() {
   $('export').disabled=!run || working || saving;
   $('state-dot').className=`state-dot ${working ? 'running' : run?.status==='saved' ? 'saved' : ''}`;
 }
-function showError(e) { $('message').textContent=e.message || String(e); }
+function setMessage(text,kind='info') {
+  $('message').dataset.kind=kind;$('message').setAttribute('role',kind==='error'?'alert':'status');$('message').textContent=text;
+}
+function showError(e) { setMessage(e.message || String(e),'error'); }
 function parseConfig(text) {
   try {return JSON.parse(text);} catch {throw new Error('网站配置的 JSON 格式不正确，请检查引号、逗号和括号。');}
 }
@@ -219,14 +222,14 @@ $('import-adapter').addEventListener('change',async event=>{
     if(file.size>65536) throw new Error('网站配置文件太大');
     const a=Core.validateAdapter(parseConfig(await file.text()));
     adapters=adapters.filter(x=>x.id!==a.id).concat(a);await chrome.storage.local.set({adapters});populateAdapters(a.id);
-    $('message').textContent='网站配置已导入。';
+    setMessage('网站配置已导入。');
   } catch(e) {showError(e);} finally {event.target.value='';}
 });
 $('save-adapter').addEventListener('click',async()=>{
   try {
     const a=Core.validateAdapter(parseConfig($('config').value));
     adapters=adapters.filter(x=>x.id!==a.id).concat(a);
-    await chrome.storage.local.set({adapters});populateAdapters(a.id);$('message').textContent='配置已保存。';
+    await chrome.storage.local.set({adapters});populateAdapters(a.id);setMessage('配置已保存。');
   } catch(e) {showError(e);}
 });
 $('open').addEventListener('click',async()=>{
@@ -238,7 +241,7 @@ $('open').addEventListener('click',async()=>{
     if (!granted) throw new Error('尚未允许这个网站');
     const r=await command({type:'PT_OPEN',url:url.href});binding=r.binding;showBinding();
     if (url.hostname==='www.linkedin.com') {$('adapter').value='linkedin-activity';showAdapter(adapters.find(a=>a.id==='linkedin-activity'));}
-    $('message').textContent='来源页已打开，等内容加载后点击「开始翻页」。';
+    setMessage('来源页已打开，等内容加载后点击「开始翻页」。');
   } catch(e) {showError(e);}
 });
 $('start').addEventListener('click',start);
@@ -270,7 +273,7 @@ window.addEventListener('beforeunload',e=>{if(working || starting || saving){e.p
   const s=await command({type:'PT_STATE'});binding=s.binding;showBinding();
   if (s.running) {
     await command({type:'PT_RUNNING',value:false});
-    $('message').textContent='前一次控制页已中断。可恢复最近记录，翻页不会自动重启。';
+    setMessage('前一次控制页已中断。可恢复最近记录，翻页不会自动重启。');
   }
   if (binding && new URL(binding.url).hostname==='www.linkedin.com') {$('adapter').value='linkedin-activity';showAdapter(adapters.find(a=>a.id==='linkedin-activity'));}
   controls();
